@@ -1,0 +1,638 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{--tv-gold:#EF9F27;--tv-gold-d:#BA7517;--tv-bg:#1a1a2e;--tv-card:#16213e;--tv-accent:#D4537E;--tv-green:#1D9E75;--tv-red:#E24B4A;--tv-text:#f0f0f0;--tv-muted:#a0a0b8;}
+  body{font-family:'DM Sans',sans-serif;background:var(--tv-bg);color:var(--tv-text);min-height:100vh;}
+  #app{width:100%;max-width:900px;margin:0 auto;padding:1rem;}
+  .screen{display:none;}.screen.active{display:block;}
+  .home-header{text-align:center;padding:2rem 0 1rem;}
+  .logo{font-family:'Bebas Neue',sans-serif;font-size:64px;color:var(--tv-gold);letter-spacing:4px;line-height:1;}
+  .logo span{color:var(--tv-accent);}
+  .tagline{font-size:15px;color:var(--tv-muted);margin-top:6px;}
+  .menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:2rem;}
+  .menu-btn{background:var(--tv-card);border:1px solid #333;border-radius:12px;padding:1.5rem;cursor:pointer;text-align:left;transition:border-color 0.2s,transform 0.1s;color:var(--tv-text);}
+  .menu-btn:hover{border-color:var(--tv-gold);transform:translateY(-2px);}
+  .menu-btn .mb-icon{font-size:28px;margin-bottom:8px;}
+  .menu-btn .mb-title{font-size:16px;font-weight:600;}
+  .menu-btn .mb-desc{font-size:12px;color:var(--tv-muted);margin-top:4px;}
+  .menu-btn.primary{grid-column:1/-1;background:var(--tv-gold);border:none;text-align:center;}
+  .menu-btn.primary .mb-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:#1a1a2e;}
+  .menu-btn.primary .mb-desc{color:#3a2500;}
+  .setup-container{padding:1rem 0;}
+  .setup-title{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--tv-gold);letter-spacing:2px;margin-bottom:1.5rem;}
+  .team-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.5rem;}
+  .team-card{background:var(--tv-card);border:1px solid #333;border-radius:12px;padding:1rem;}
+  .team-card h3{font-size:13px;color:var(--tv-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;}
+  .team-card input{background:#0d0d1a;border:1px solid #333;border-radius:8px;padding:8px 12px;color:var(--tv-text);width:100%;font-size:14px;font-family:'DM Sans',sans-serif;}
+  .team-card input:focus{outline:none;border-color:var(--tv-gold);}
+  .section-label{font-size:13px;color:var(--tv-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+  .cat-filter{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+  .cat-btn{background:#0d0d1a;border:1px solid #333;border-radius:20px;padding:5px 14px;font-size:12px;cursor:pointer;color:var(--tv-muted);transition:all 0.2s;}
+  .cat-btn.active{background:var(--tv-gold);color:#1a1a2e;border-color:var(--tv-gold);font-weight:700;}
+  .q-list{display:flex;flex-direction:column;gap:8px;margin-bottom:1rem;max-height:300px;overflow-y:auto;}
+  .q-item{background:var(--tv-card);border:1px solid #333;border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;}
+  .q-num{background:var(--tv-gold);color:#1a1a2e;font-weight:700;font-size:12px;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .q-text{font-size:13px;flex:1;color:var(--tv-text);}
+  .q-edit-btn{background:none;border:none;color:var(--tv-muted);cursor:pointer;font-size:16px;padding:4px;}
+  .q-edit-btn:hover{color:var(--tv-gold);}
+  .add-q-btn{background:none;border:1px dashed #444;border-radius:10px;padding:10px;color:var(--tv-muted);cursor:pointer;font-size:13px;width:100%;transition:border-color 0.2s,color 0.2s;}
+  .add-q-btn:hover{border-color:var(--tv-gold);color:var(--tv-gold);}
+  .action-row{display:flex;gap:10px;margin-top:1.5rem;}
+  .btn-primary{background:var(--tv-gold);color:#1a1a2e;border:none;border-radius:10px;padding:12px 24px;font-weight:700;font-size:15px;cursor:pointer;flex:1;font-family:'DM Sans',sans-serif;}
+  .btn-primary:hover{background:var(--tv-gold-d);}
+  .btn-secondary{background:none;border:1px solid #444;border-radius:10px;padding:12px 24px;color:var(--tv-muted);font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+  .btn-secondary:hover{border-color:#666;color:var(--tv-text);}
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;z-index:100;padding:1rem;}
+  .modal-box{background:#1a1a2e;border:1px solid #333;border-radius:16px;padding:1.5rem;width:100%;max-width:520px;max-height:85vh;overflow-y:auto;}
+  .modal-box h2{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--tv-gold);letter-spacing:2px;margin-bottom:1rem;}
+  .modal-box input[type=text]{background:#0d0d1a;border:1px solid #333;border-radius:8px;padding:10px 12px;color:var(--tv-text);width:100%;font-size:14px;font-family:'DM Sans',sans-serif;margin-bottom:10px;}
+  .modal-box input[type=text]:focus{outline:none;border-color:var(--tv-gold);}
+  .modal-box select{background:#0d0d1a;border:1px solid #333;border-radius:8px;padding:10px 12px;color:var(--tv-text);width:100%;font-size:14px;font-family:'DM Sans',sans-serif;margin-bottom:10px;}
+  .answers-grid-modal{display:flex;flex-direction:column;gap:8px;margin-bottom:1rem;}
+  .ans-row{display:flex;align-items:center;gap:8px;}
+  .ans-pts{background:var(--tv-gold);color:#1a1a2e;font-size:11px;font-weight:700;border-radius:6px;padding:4px 8px;white-space:nowrap;min-width:48px;text-align:center;}
+  .ans-row input{flex:1;}
+  .modal-actions{display:flex;gap:8px;margin-top:1rem;}
+  .game-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding:10px 14px;background:var(--tv-card);border-radius:12px;flex-wrap:wrap;gap:8px;}
+  .game-round-info{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--tv-gold);letter-spacing:1px;}
+  .game-question-counter{font-size:13px;color:var(--tv-muted);}
+  .scores-bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-bottom:1rem;}
+  .team-score-block{background:var(--tv-card);border:2px solid #333;border-radius:12px;padding:12px 16px;text-align:center;transition:border-color 0.2s;}
+  .team-score-block.active-turn{border-color:var(--tv-gold);background:#1a1a00;}
+  .team-score-block.buzzed{border-color:var(--tv-accent);}
+  .tsb-name{font-size:12px;color:var(--tv-muted);text-transform:uppercase;letter-spacing:1px;}
+  .tsb-score{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--tv-text);}
+  .tsb-turn-badge{font-size:10px;font-weight:700;color:var(--tv-gold);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
+  .vs-col{display:flex;flex-direction:column;align-items:center;gap:8px;}
+  .vs-badge{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--tv-muted);}
+  .switch-turn-btn{background:#2a2a4a;border:1px solid #444;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;color:var(--tv-gold);letter-spacing:1px;text-transform:uppercase;white-space:nowrap;transition:background 0.2s;}
+  .switch-turn-btn:hover{background:#3a3a5a;}
+  .question-box{background:var(--tv-card);border:1px solid #444;border-radius:14px;padding:1.5rem;margin-bottom:1rem;text-align:center;}
+  .q-label{font-size:12px;color:var(--tv-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+  .q-main{font-size:20px;font-weight:600;line-height:1.4;}
+  .answers-board{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem;}
+  .ans-tile{background:var(--tv-card);border:2px solid #2a2a4a;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:border-color 0.15s,background 0.15s;}
+  .ans-tile:hover{border-color:#444;}
+  .ans-tile.revealed{background:#0f2a1f;border-color:var(--tv-green);}
+  .ans-tile.revealed .at-text{color:#5DCAA5;}
+  .at-num{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--tv-gold);min-width:24px;}
+  .at-text{font-size:14px;color:var(--tv-muted);}
+  .at-pts{margin-left:auto;font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--tv-text);}
+  .ans-tile.revealed .at-pts{color:#5DCAA5;}
+  .controls-section{background:var(--tv-card);border:1px solid #333;border-radius:12px;padding:1rem;margin-bottom:1rem;}
+  .controls-section h4{font-size:12px;color:var(--tv-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+  .buzzer-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px;}
+  .buzzer-btn{border:none;border-radius:10px;padding:14px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;cursor:pointer;transition:transform 0.1s,opacity 0.2s;}
+  .buzzer-btn:active{transform:scale(0.96);}
+  .buzzer-btn.team1{background:#D4537E;color:#fff;}
+  .buzzer-btn.team2{background:#378ADD;color:#fff;}
+  .award-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px;}
+  .award-btn{background:#0d0d1a;border:1px solid #333;border-radius:8px;padding:8px 6px;font-size:12px;font-weight:600;cursor:pointer;color:var(--tv-text);transition:border-color 0.15s;}
+  .award-btn:hover{border-color:var(--tv-gold);color:var(--tv-gold);}
+  .bottom-controls{display:flex;gap:8px;}
+  .buzz-indicator{padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;text-align:center;margin-bottom:10px;display:none;}
+  .buzz-indicator.show{display:block;}
+  .buzz-indicator.team1{background:#4a1b2e;color:#F4C0D1;}
+  .buzz-indicator.team2{background:#0c2d47;color:#B5D4F4;}
+  .timer-bar-wrap{height:4px;background:#2a2a4a;border-radius:2px;margin-bottom:10px;overflow:hidden;}
+  .timer-bar{height:100%;background:var(--tv-gold);border-radius:2px;transition:width 0.5s linear,background 0.5s;}
+  .next-q-btn{background:var(--tv-green);border:none;border-radius:10px;padding:12px 20px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;cursor:pointer;color:#fff;flex:1;}
+  .end-round-btn{background:#333;border:1px solid #444;border-radius:10px;padding:12px 20px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;color:var(--tv-muted);}
+  .reset-buzz-btn{background:#2a1a00;border:1px solid var(--tv-gold-d);border-radius:10px;padding:12px 20px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;color:var(--tv-gold);}
+  .winner-screen{text-align:center;padding:3rem 1rem;}
+  .winner-crown{font-size:60px;margin-bottom:1rem;}
+  .winner-title{font-family:'Bebas Neue',sans-serif;font-size:48px;color:var(--tv-gold);letter-spacing:4px;}
+  .winner-name{font-size:28px;font-weight:600;margin-top:8px;}
+  .winner-score{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--tv-accent);margin-top:4px;}
+  .score-summary{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:2rem 0;}
+  .ss-card{background:var(--tv-card);border:1px solid #333;border-radius:12px;padding:1rem;}
+  .ssc-name{font-size:13px;color:var(--tv-muted);}
+  .ssc-score{font-family:'Bebas Neue',sans-serif;font-size:36px;}
+  .kb-hint{font-size:11px;color:var(--tv-muted);text-align:center;margin-top:6px;}
+  .cat-tag{font-size:10px;background:#2a2a4a;color:var(--tv-muted);border-radius:4px;padding:2px 6px;margin-left:6px;}
+  .sel-count{font-size:12px;color:var(--tv-gold);margin-bottom:8px;}
+</style>
+
+<div id="app">
+
+  <div id="screen-home" class="screen active">
+    <div class="home-header">
+      <div class="logo">Trivial<span>Verse</span></div>
+      <div class="tagline">The Well-Being Club Game Show</div>
+    </div>
+    <div class="menu-grid">
+      <div class="menu-btn primary" onclick="goTo('screen-setup')">
+        <div class="mb-title">▶ Start New Round</div>
+        <div class="mb-desc">Set up teams and begin playing</div>
+      </div>
+      <div class="menu-btn" onclick="goTo('screen-questions')">
+        <div class="mb-icon"><i class="ti ti-list-check" aria-hidden="true"></i></div>
+        <div class="mb-title">Manage Questions</div>
+        <div class="mb-desc">Add, edit or remove questions</div>
+      </div>
+      <div class="menu-btn" onclick="alert('Keyboard Buzzers:\n\nTeam 1 → press A\nTeam 2 → press L\n\nWorks during any active game round!')">
+        <div class="mb-icon"><i class="ti ti-keyboard" aria-hidden="true"></i></div>
+        <div class="mb-title">Keyboard Buzzers</div>
+        <div class="mb-desc">Team 1: A key · Team 2: L key</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="screen-setup" class="screen">
+    <div class="setup-container">
+      <div class="setup-title">Match Setup</div>
+      <div class="team-grid">
+        <div class="team-card">
+          <h3>Team 1</h3>
+          <input type="text" id="team1-name" placeholder="Team name..." value="Team Alpha" />
+        </div>
+        <div class="team-card">
+          <h3>Team 2</h3>
+          <input type="text" id="team2-name" placeholder="Team name..." value="Team Blaze" />
+        </div>
+      </div>
+      <div class="section-label">Filter by category</div>
+      <div class="cat-filter" id="cat-filter"></div>
+      <div class="sel-count" id="sel-count"></div>
+      <div class="section-label">Pick up to 3 questions</div>
+      <div id="setup-q-list" class="q-list"></div>
+      <div class="action-row">
+        <button class="btn-secondary" onclick="goTo('screen-home')">← Back</button>
+        <button class="btn-primary" onclick="startGame()">Start Round →</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="screen-questions" class="screen">
+    <div class="setup-container">
+      <div class="setup-title">Question Bank</div>
+      <div class="cat-filter" id="qbank-cat-filter"></div>
+      <div id="qbank-list" class="q-list"></div>
+      <button class="add-q-btn" onclick="openQuestionEditor(-1)"><i class="ti ti-plus" aria-hidden="true"></i> Add new question</button>
+      <div class="action-row" style="margin-top:1.5rem;">
+        <button class="btn-secondary" onclick="goTo('screen-home')">← Back</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="screen-game" class="screen">
+    <div class="game-header">
+      <div class="game-round-info">TrivialVerse</div>
+      <div class="game-question-counter" id="g-q-counter">Question 1 of 3</div>
+      <button class="btn-secondary" style="padding:6px 14px;font-size:12px;" onclick="goTo('screen-home')">Exit</button>
+    </div>
+    <div class="scores-bar">
+      <div class="team-score-block" id="tsb1">
+        <div class="tsb-name" id="g-t1-name">Team Alpha</div>
+        <div class="tsb-score" id="g-t1-score">0</div>
+        <div class="tsb-turn-badge" id="turn-badge-1"></div>
+      </div>
+      <div class="vs-col">
+        <div class="vs-badge">VS</div>
+        <button class="switch-turn-btn" onclick="switchTurn()" title="Switch active turn">⇄ Switch Turn</button>
+      </div>
+      <div class="team-score-block" id="tsb2">
+        <div class="tsb-name" id="g-t2-name">Team Blaze</div>
+        <div class="tsb-score" id="g-t2-score">0</div>
+        <div class="tsb-turn-badge" id="turn-badge-2"></div>
+      </div>
+    </div>
+    <div class="question-box">
+      <div class="q-label">Survey says...</div>
+      <div class="q-main" id="g-question-text">Loading question...</div>
+    </div>
+    <div class="timer-bar-wrap"><div class="timer-bar" id="timer-bar"></div></div>
+    <div class="buzz-indicator" id="buzz-indicator"></div>
+    <div class="answers-board" id="answers-board"></div>
+    <div class="controls-section">
+      <h4><i class="ti ti-hand-stop" aria-hidden="true"></i> Buzz In</h4>
+      <div class="buzzer-grid">
+        <button class="buzzer-btn team1" onclick="buzzIn(0)">⚡ <span id="buzz-label-1">Team Alpha</span></button>
+        <button class="buzzer-btn team2" onclick="buzzIn(1)">⚡ <span id="buzz-label-2">Team Blaze</span></button>
+      </div>
+      <div class="kb-hint">Keyboard: <strong>A</strong> = Team 1 · <strong>L</strong> = Team 2</div>
+      <h4 style="margin-top:12px;"><i class="ti ti-coins" aria-hidden="true"></i> Award Points to Active Team</h4>
+      <div id="award-grid" class="award-grid"></div>
+    </div>
+    <div class="bottom-controls">
+      <button class="end-round-btn" onclick="endRound()">End Round</button>
+      <button class="reset-buzz-btn" onclick="resetBuzz()">Reset Buzz</button>
+      <button class="next-q-btn" onclick="nextQuestion()">Next Question →</button>
+    </div>
+  </div>
+
+  <div id="screen-winner" class="screen">
+    <div class="winner-screen">
+      <div class="winner-crown">🏆</div>
+      <div class="winner-title">Winner!</div>
+      <div class="winner-name" id="w-name"></div>
+      <div class="winner-score" id="w-score"></div>
+      <div class="score-summary">
+        <div class="ss-card"><div class="ssc-name" id="w-t1n"></div><div class="ssc-score" id="w-t1s" style="color:#D4537E;"></div></div>
+        <div class="ss-card"><div class="ssc-name" id="w-t2n"></div><div class="ssc-score" id="w-t2s" style="color:#378ADD;"></div></div>
+      </div>
+      <button class="btn-primary" onclick="goTo('screen-home')" style="max-width:300px;margin:0 auto;">Play Again</button>
+    </div>
+  </div>
+
+</div>
+
+<div id="modal-overlay" class="modal-overlay" style="display:none;" onclick="closeModalOutside(event)">
+  <div class="modal-box">
+    <h2 id="modal-title">Edit Question</h2>
+    <input type="text" id="modal-q-text" placeholder="Type your question..." />
+    <select id="modal-q-cat"></select>
+    <div class="answers-grid-modal" id="modal-answers-grid"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveQuestion()">Save Question</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const CATS=['Social Life','General Knowledge','Bollywood','Hollywood','Singers','Other'];
+const PTS=[100,80,60,50,40,30,20];
+
+let questions=[
+  {cat:'Social Life',q:'Name something students do during a free period on campus',answers:[{t:'Go to canteen',p:100},{t:'Scroll phone',p:80},{t:'Sleep/rest',p:60},{t:'Study',p:50},{t:'Roam around',p:40}]},
+  {cat:'Social Life',q:'Name a place on campus where students love to hang out',answers:[{t:'Canteen',p:100},{t:'Library',p:80},{t:'Sports ground',p:60},{t:'Corridor',p:50},{t:'Common room',p:40}]},
+  {cat:'Social Life',q:'Name something students always borrow from each other',answers:[{t:'Pen/pencil',p:100},{t:'Notes',p:80},{t:'Phone charger',p:60},{t:'Money',p:50},{t:'Earphones',p:40}]},
+  {cat:'Social Life',q:'Name something students talk about the most with friends',answers:[{t:'College gossip',p:100},{t:'Exams',p:80},{t:'Teachers',p:60},{t:'Future plans',p:50},{t:'Movies/shows',p:40}]},
+  {cat:'Social Life',q:'Name a reason students are late to class',answers:[{t:'Overslept',p:100},{t:'Traffic',p:80},{t:'Canteen queue',p:60},{t:'Couldn\'t find notes',p:50},{t:'Lost track of time',p:40}]},
+  {cat:'Social Life',q:'Name something students do on the last day before exams',answers:[{t:'Panic study',p:100},{t:'Make notes',p:80},{t:'Ask friends for help',p:60},{t:'Pray',p:50},{t:'Sleep early',p:40}]},
+  {cat:'Social Life',q:'Name a type of student you find in every group',answers:[{t:'The funny one',p:100},{t:'The topper',p:80},{t:'The lazy one',p:60},{t:'The leader',p:50},{t:'The quiet one',p:40}]},
+  {cat:'Social Life',q:'Name something students do during a boring lecture',answers:[{t:'Doodle',p:100},{t:'Scroll phone secretly',p:80},{t:'Pass notes',p:60},{t:'Daydream',p:50},{t:'Sleep',p:40}]},
+  {cat:'Social Life',q:'Name a food students eat the most on campus',answers:[{t:'Maggi/noodles',p:100},{t:'Samosa',p:80},{t:'Chips',p:60},{t:'Chai',p:50},{t:'Bread/sandwich',p:40}]},
+  {cat:'Social Life',q:'Name something students do together during lunch break',answers:[{t:'Eat together',p:100},{t:'Play games',p:80},{t:'Listen to music',p:60},{t:'Roam campus',p:50},{t:'Discuss assignments',p:40}]},
+  {cat:'Social Life',q:'Name an excuse students give for not submitting assignments',answers:[{t:'Forgot',p:100},{t:'My laptop crashed',p:80},{t:'Was unwell',p:60},{t:'Didn\'t understand it',p:50},{t:'Printer issue',p:40}]},
+  {cat:'Social Life',q:'Name something students celebrate together in college',answers:[{t:'Birthdays',p:100},{t:'Results/marks',p:80},{t:'Fests & events',p:60},{t:'Last day of semester',p:50},{t:'Winning a competition',p:40}]},
+  {cat:'Social Life',q:'Name a club or activity students join in college',answers:[{t:'Sports team',p:100},{t:'Cultural club',p:80},{t:'Dance/music',p:60},{t:'Debate club',p:50},{t:'Volunteer group',p:40}]},
+  {cat:'Social Life',q:'Name something students do when a teacher is absent',answers:[{t:'Make noise',p:100},{t:'Leave class',p:80},{t:'Play games',p:60},{t:'Study on their own',p:50},{t:'Chat with friends',p:40}]},
+  {cat:'Social Life',q:'Name something every student has in their college bag',answers:[{t:'Water bottle',p:100},{t:'Notebook',p:80},{t:'Pen',p:60},{t:'Phone',p:50},{t:'Snacks',p:40}]},
+  {cat:'Social Life',q:'Name a way students make new friends in college',answers:[{t:'Sitting next to them in class',p:100},{t:'Group projects',p:80},{t:'Clubs & events',p:60},{t:'Canteen talks',p:50},{t:'Social media',p:40}]},
+  {cat:'Social Life',q:'Name something that instantly lifts a student\'s mood on a bad day',answers:[{t:'Favourite food',p:100},{t:'A good friend',p:80},{t:'Music',p:60},{t:'Funny video',p:50},{t:'A nap',p:40}]},
+  {cat:'Social Life',q:'Name something students complain about the most in college',answers:[{t:'Too many assignments',p:100},{t:'Attendance rules',p:80},{t:'Early morning classes',p:60},{t:'Canteen food',p:50},{t:'Strict teachers',p:40}]},
+  {cat:'Social Life',q:'Name a sound you always hear in a college corridor',answers:[{t:'Laughter',p:100},{t:'Footsteps rushing',p:80},{t:'Someone calling out a name',p:60},{t:'Phone notifications',p:50},{t:'Bell/announcement',p:40}]},
+  {cat:'Social Life',q:'Name something students do right after the last exam is over',answers:[{t:'Celebrate with friends',p:100},{t:'Sleep for hours',p:80},{t:'Eat out',p:60},{t:'Call family',p:50},{t:'Delete notes/books',p:40}]},
+  {cat:'Social Life',q:'Name something students do when they see a friend across campus',answers:[{t:'Wave/shout their name',p:100},{t:'Run towards them',p:80},{t:'Ignore and walk',p:60},{t:'Text them',p:50},{t:'Take a different route',p:40}]},
+  {cat:'Social Life',q:'Name a way students kill time between two lectures',answers:[{t:'Scroll social media',p:100},{t:'Eat something',p:80},{t:'Sleep on desk',p:60},{t:'Play games on phone',p:50},{t:'Talk to classmates',p:40}]},
+  {cat:'Social Life',q:'Name something that happens at every college fest',answers:[{t:'Dance performances',p:100},{t:'Food stalls',p:80},{t:'Competitions',p:60},{t:'Friends getting lost',p:50},{t:'Someone forgets their part',p:40}]},
+  {cat:'Social Life',q:'Name a thing students do on their phone during class',answers:[{t:'Texting friends',p:100},{t:'Instagram/reels',p:80},{t:'Play games',p:60},{t:'Watch videos',p:50},{t:'Online shopping',p:40}]},
+  {cat:'Social Life',q:'Name something students fight over in a group project',answers:[{t:'Who does the most work',p:100},{t:'Presentation design',p:80},{t:'Meeting time',p:60},{t:'Who presents it',p:50},{t:'Font and formatting',p:40}]},
+  {cat:'Social Life',q:'Name a reason students skip the canteen and eat outside college',answers:[{t:'Better food outside',p:100},{t:'Too crowded inside',p:80},{t:'Cheaper options outside',p:60},{t:'Need a break from campus',p:50},{t:'Friends dragged them',p:40}]},
+  {cat:'Social Life',q:'Name something a student does when they don\'t know the answer in class',answers:[{t:'Look down and avoid eye contact',p:100},{t:'Pretend to write something',p:80},{t:'Look at a friend for help',p:60},{t:'Make up a random answer',p:50},{t:'Ask to go to washroom',p:40}]},
+  {cat:'Social Life',q:'Name a topic that always starts an argument among students',answers:[{t:'Which subject is hardest',p:100},{t:'Sports teams',p:80},{t:'Who is the best teacher',p:60},{t:'Canteen food quality',p:50},{t:'Whose turn it is to treat',p:40}]},
+  {cat:'Social Life',q:'Name something students do when results are announced',answers:[{t:'Check immediately with nerves',p:100},{t:'Compare with friends',p:80},{t:'Call parents',p:60},{t:'Celebrate or cry',p:50},{t:'Ask teacher to recheck',p:40}]},
+  {cat:'Social Life',q:'Name a thing that every college friend group has a tradition of doing',answers:[{t:'Eating at the same spot',p:100},{t:'Group photo at events',p:80},{t:'Celebrating birthdays together',p:60},{t:'Studying together before exams',p:50},{t:'Inside jokes and nicknames',p:40}]},
+  {cat:'General Knowledge',q:'Name a planet in our solar system',answers:[{t:'Earth',p:100},{t:'Mars',p:80},{t:'Jupiter',p:60},{t:'Saturn',p:50},{t:'Venus',p:40}]},
+  {cat:'General Knowledge',q:'Name something you find in a kitchen',answers:[{t:'Stove',p:100},{t:'Refrigerator',p:80},{t:'Utensils',p:60},{t:'Sink',p:50},{t:'Spices',p:40}]},
+  {cat:'General Knowledge',q:'Name a country in Europe',answers:[{t:'France',p:100},{t:'Germany',p:80},{t:'Italy',p:60},{t:'Spain',p:50},{t:'England',p:40}]},
+  {cat:'General Knowledge',q:'Name an animal that lives in the ocean',answers:[{t:'Fish',p:100},{t:'Shark',p:80},{t:'Dolphin',p:60},{t:'Whale',p:50},{t:'Octopus',p:40}]},
+  {cat:'General Knowledge',q:'Name a sport played with a ball',answers:[{t:'Cricket',p:100},{t:'Football',p:80},{t:'Basketball',p:60},{t:'Tennis',p:50},{t:'Volleyball',p:40}]},
+  {cat:'General Knowledge',q:'Name something associated with rain',answers:[{t:'Umbrella',p:100},{t:'Clouds',p:80},{t:'Rainbow',p:60},{t:'Puddles',p:50},{t:'Thunder',p:40}]},
+  {cat:'General Knowledge',q:'Name a fruit that is red in colour',answers:[{t:'Apple',p:100},{t:'Strawberry',p:80},{t:'Watermelon',p:60},{t:'Cherry',p:50},{t:'Pomegranate',p:40}]},
+  {cat:'General Knowledge',q:'Name something you see on a road',answers:[{t:'Cars',p:100},{t:'Traffic lights',p:80},{t:'Pedestrians',p:60},{t:'Speed bumps',p:50},{t:'Streetlights',p:40}]},
+  {cat:'General Knowledge',q:'Name a day of the week students love the most',answers:[{t:'Saturday',p:100},{t:'Sunday',p:80},{t:'Friday',p:60},{t:'Monday',p:50},{t:'Wednesday',p:40}]},
+  {cat:'General Knowledge',q:'Name something that runs on electricity',answers:[{t:'Fan',p:100},{t:'TV',p:80},{t:'Refrigerator',p:60},{t:'Phone',p:50},{t:'Light bulb',p:40}]},
+  {cat:'General Knowledge',q:'Name a wild animal found in India',answers:[{t:'Tiger',p:100},{t:'Elephant',p:80},{t:'Lion',p:60},{t:'Leopard',p:50},{t:'Peacock',p:40}]},
+  {cat:'General Knowledge',q:'Name something you do every single morning',answers:[{t:'Brush teeth',p:100},{t:'Wash face',p:80},{t:'Eat breakfast',p:60},{t:'Get dressed',p:50},{t:'Check phone',p:40}]},
+  {cat:'General Knowledge',q:'Name a mode of transport',answers:[{t:'Bus',p:100},{t:'Train',p:80},{t:'Car',p:60},{t:'Bicycle',p:50},{t:'Aeroplane',p:40}]},
+  {cat:'General Knowledge',q:'Name something you find in a hospital',answers:[{t:'Doctor',p:100},{t:'Nurse',p:80},{t:'Medicine',p:60},{t:'Bed/stretcher',p:50},{t:'Injection',p:40}]},
+  {cat:'General Knowledge',q:'Name a subject taught in school',answers:[{t:'Maths',p:100},{t:'Science',p:80},{t:'English',p:60},{t:'History',p:50},{t:'Geography',p:40}]},
+  {cat:'General Knowledge',q:'Name something associated with festivals in India',answers:[{t:'Lights/diyas',p:100},{t:'New clothes',p:80},{t:'Sweets',p:60},{t:'Family gathering',p:50},{t:'Fireworks',p:40}]},
+  {cat:'General Knowledge',q:'Name an animal that gives us milk',answers:[{t:'Cow',p:100},{t:'Buffalo',p:80},{t:'Goat',p:60},{t:'Camel',p:50},{t:'Sheep',p:40}]},
+  {cat:'General Knowledge',q:'Name something you find in a library',answers:[{t:'Books',p:100},{t:'Silence',p:80},{t:'Tables and chairs',p:60},{t:'Librarian',p:50},{t:'Shelves',p:40}]},
+  {cat:'General Knowledge',q:'Name a colour in the Indian national flag',answers:[{t:'Orange/saffron',p:100},{t:'White',p:80},{t:'Green',p:60},{t:'Blue (Ashoka Chakra)',p:50}]},
+  {cat:'General Knowledge',q:'Name something people do on a Sunday',answers:[{t:'Sleep in',p:100},{t:'Watch TV',p:80},{t:'Go out with family',p:60},{t:'Cook special food',p:50},{t:'Clean the house',p:40}]},
+  {cat:'General Knowledge',q:'Name something you find in the sky',answers:[{t:'Sun',p:100},{t:'Clouds',p:80},{t:'Moon',p:60},{t:'Stars',p:50},{t:'Birds',p:40}]},
+  {cat:'General Knowledge',q:'Name a vegetable used in almost every Indian dish',answers:[{t:'Onion',p:100},{t:'Tomato',p:80},{t:'Potato',p:60},{t:'Garlic',p:50},{t:'Ginger',p:40}]},
+  {cat:'General Knowledge',q:'Name something a postman delivers',answers:[{t:'Letters',p:100},{t:'Parcels/packages',p:80},{t:'Bills',p:60},{t:'Newspapers',p:50},{t:'Speed post',p:40}]},
+  {cat:'General Knowledge',q:'Name a job that works at night',answers:[{t:'Security guard',p:100},{t:'Doctor/nurse',p:80},{t:'Police',p:60},{t:'Truck driver',p:50},{t:'Baker',p:40}]},
+  {cat:'General Knowledge',q:'Name something that melts in heat',answers:[{t:'Ice',p:100},{t:'Chocolate',p:80},{t:'Butter',p:60},{t:'Candle',p:50},{t:'Ice cream',p:40}]},
+  {cat:'General Knowledge',q:'Name a thing people do at a birthday party',answers:[{t:'Cut cake',p:100},{t:'Sing happy birthday',p:80},{t:'Blow balloons',p:60},{t:'Give gifts',p:50},{t:'Take photos',p:40}]},
+  {cat:'General Knowledge',q:'Name something associated with winter',answers:[{t:'Sweater/jacket',p:100},{t:'Fog',p:80},{t:'Hot tea/coffee',p:60},{t:'Blanket',p:50},{t:'Cold breeze',p:40}]},
+  {cat:'General Knowledge',q:'Name an animal that can fly',answers:[{t:'Eagle',p:100},{t:'Parrot',p:80},{t:'Butterfly',p:60},{t:'Bat',p:50},{t:'Sparrow',p:40}]},
+  {cat:'General Knowledge',q:'Name something found inside a classroom',answers:[{t:'Blackboard/whiteboard',p:100},{t:'Desks and chairs',p:80},{t:'Teacher',p:60},{t:'Fan/light',p:50},{t:'Chalk/marker',p:40}]},
+  {cat:'General Knowledge',q:'Name a thing people buy at a supermarket',answers:[{t:'Groceries',p:100},{t:'Snacks',p:80},{t:'Drinks',p:60},{t:'Toiletries',p:50},{t:'Cleaning supplies',p:40}]},
+  {cat:'General Knowledge',q:'Name something people usually keep on their office desk',answers:[{t:'Laptop',p:100},{t:'Coffee mug',p:80},{t:'Mini plant',p:60},{t:'Stationery',p:50}]},
+  {cat:'General Knowledge',q:'Name a popular cloud storage service',answers:[{t:'Google Drive',p:100},{t:'Dropbox',p:80},{t:'OneDrive',p:60},{t:'iCloud',p:50}]},
+  {cat:'General Knowledge',q:'Name a popular type of jewelry worn by women',answers:[{t:'Earrings',p:100},{t:'Necklaces',p:80},{t:'Bracelets',p:60},{t:'Rings',p:50},{t:'Pins or brooches',p:40}]},
+  {cat:'General Knowledge',q:'Name something people often do before a big presentation',answers:[{t:'Practice',p:100},{t:'Panic',p:80},{t:'Drink water',p:60},{t:'Check notes',p:50}]},
+  {cat:'General Knowledge',q:'Name the first thing a student does after a really hard exam',answers:[{t:'Sleep/nap',p:100},{t:'Party/go out',p:80},{t:'Call mom/dad',p:60},{t:'Complain with friends',p:50},{t:'Eat a huge meal',p:40}]},
+  {cat:'General Knowledge',q:'Name something people get easily addicted to',answers:[{t:'Social media/scrolling',p:100},{t:'Video games',p:80},{t:'Caffeine',p:60},{t:'Online shopping',p:50},{t:'TV shows',p:40}]},
+  {cat:'General Knowledge',q:'Name a machine humans use to fly that isn\'t an airplane',answers:[{t:'Hot air balloon',p:100},{t:'Zeppelin',p:80},{t:'Blimp',p:60},{t:'Helicopter',p:50},{t:'Glider',p:40}]},
+  {cat:'General Knowledge',q:'Besides money, name something a college student asks parents for when they visit',answers:[{t:'Home-cooked meal',p:100},{t:'Trip to the grocery store',p:80},{t:'Laundry detergent/essentials',p:60},{t:'A hug/emotional support',p:50},{t:'Old childhood stuff',p:40}]},
+  {cat:'Bollywood',q:'Name a Bollywood actor known for action movies',answers:[{t:'Salman Khan',p:100},{t:'Akshay Kumar',p:80},{t:'Shah Rukh Khan',p:60},{t:'Hrithik Roshan',p:50},{t:'Tiger Shroff',p:40}]},
+  {cat:'Bollywood',q:'Name a Bollywood actress everyone knows',answers:[{t:'Deepika Padukone',p:100},{t:'Alia Bhatt',p:80},{t:'Katrina Kaif',p:60},{t:'Priyanka Chopra',p:50},{t:'Kareena Kapoor',p:40}]},
+  {cat:'Bollywood',q:'Name a Bollywood movie with a colour in its title',answers:[{t:'Pink',p:100},{t:'Black',p:80},{t:'Red',p:60},{t:'Blue',p:50},{t:'Yellow',p:40}]},
+  {cat:'Bollywood',q:'Name a famous Bollywood dance number everyone knows',answers:[{t:'Chaiyya Chaiyya',p:100},{t:'Jumma Chumma',p:80},{t:'Dhoom Machale',p:60},{t:'Nagada Sang Dhol',p:50},{t:'Badtameez Dil',p:40}]},
+  {cat:'Bollywood',q:'Name a Bollywood movie based on cricket',answers:[{t:'MS Dhoni',p:100},{t:'Lagaan',p:80},{t:'83',p:60},{t:'Iqbal',p:50},{t:'Jersey',p:40}]},
+  {cat:'Bollywood',q:'Name something that always happens in a Bollywood movie',answers:[{t:'Song and dance',p:100},{t:'Love story',p:80},{t:'Fight scene',p:60},{t:'Emotional family moment',p:50},{t:'Comedy scene',p:40}]},
+  {cat:'Bollywood',q:'Name a Bollywood movie everyone has seen at least once',answers:[{t:'DDLJ',p:100},{t:'3 Idiots',p:80},{t:'Sholay',p:60},{t:'Kabhi Khushi Kabhie Gham',p:50},{t:'Dangal',p:40}]},
+  {cat:'Bollywood',q:'Name a Bollywood movie based on a true story',answers:[{t:'Dangal',p:100},{t:'MS Dhoni',p:80},{t:'Mary Kom',p:60},{t:'Bhaag Milkha Bhaag',p:50},{t:'83',p:40}]},
+  {cat:'Bollywood',q:'Name a word that appears most in Bollywood song titles',answers:[{t:'Dil',p:100},{t:'Pyaar',p:80},{t:'Tum',p:60},{t:'Ishq',p:50},{t:'Zindagi',p:40}]},
+  {cat:'Bollywood',q:'Name a Bollywood movie with a number in its title',answers:[{t:'3 Idiots',p:100},{t:'83',p:80},{t:'1920',p:60},{t:'2 States',p:50},{t:'7 Khoon Maaf',p:40}]},
+  {cat:'Bollywood',q:'Name a famous Bollywood villain everyone remembers',answers:[{t:'Mogambo (Mr India)',p:100},{t:'Gabbar Singh (Sholay)',p:80},{t:'Shakaal (Shaan)',p:60},{t:'Kancha (Agneepath)',p:50}]},
+  {cat:'Bollywood',q:'Name a Bollywood movie that made everyone cry',answers:[{t:'Kal Ho Na Ho',p:100},{t:'Taare Zameen Par',p:80},{t:'Bajrangi Bhaijaan',p:60},{t:'Dangal',p:50},{t:'Dil Dhadakne Do',p:40}]},
+  {cat:'Bollywood',q:'Name a Bollywood comedian actor',answers:[{t:'Paresh Rawal',p:100},{t:'Johnny Lever',p:80},{t:'Govinda',p:60},{t:'Kapil Sharma',p:50},{t:'Rajpal Yadav',p:40}]},
+  {cat:'Bollywood',q:'Name a Bollywood movie with a superhero',answers:[{t:'Krrish',p:100},{t:'Ra One',p:80},{t:'Mr India',p:60},{t:'A Flying Jatt',p:50}]},
+  {cat:'Bollywood',q:'Name a thing Bollywood heroes always do in a fight scene',answers:[{t:'Beat 10 people alone',p:100},{t:'Slow motion punch',p:80},{t:'Tear their shirt',p:60},{t:'Dramatic dialogue',p:50},{t:'Land perfectly after a jump',p:40}]},
+  {cat:'Bollywood',q:'Name a Bollywood movie set in a school or college',answers:[{t:'3 Idiots',p:100},{t:'Student of the Year',p:80},{t:'Taare Zameen Par',p:60},{t:'Mohabbatein',p:50},{t:'Kuch Kuch Hota Hai',p:40}]},
+  {cat:'Bollywood',q:'Name a famous Bollywood song that plays at every wedding',answers:[{t:'Mehndi Laga Ke Rakhna',p:100},{t:'Bole Chudiyan',p:80},{t:'Didi Tera Devar',p:60},{t:'Aaj Meri Yaar Ki Shaadi',p:50}]},
+  {cat:'Bollywood',q:'Name a Bollywood actor who has hosted a reality show',answers:[{t:'Salman Khan (Bigg Boss)',p:100},{t:'Amitabh Bachchan (KBC)',p:80},{t:'Akshay Kumar (Khatron Ke Khiladi)',p:60},{t:'Hrithik Roshan',p:50}]},
+  {cat:'Bollywood',q:'Name a Bollywood movie title that is just one word',answers:[{t:'Sholay',p:100},{t:'Dilwale',p:80},{t:'Dangal',p:60},{t:'Dhadak',p:50},{t:'Baazigar',p:40}]},
+  {cat:'Bollywood',q:'Name something Shah Rukh Khan is famous for',answers:[{t:'Arms wide open pose',p:100},{t:'Romantic dialogues',p:80},{t:'Dimples',p:60},{t:'Dancing',p:50},{t:'Witty interviews',p:40}]},
+  {cat:'Bollywood',q:'Name a famous Bollywood dialogue everyone can recite',answers:[{t:'Kitne aadmi the',p:100},{t:'Mogambo khush hua',p:80},{t:'Bade bade deshon mein',p:60},{t:'Don ko pakadna mushkil hai',p:50}]},
+  {cat:'Bollywood',q:'Name a Bollywood movie where the hero disguises as someone else',answers:[{t:'Chachi 420',p:100},{t:'Mr India',p:80},{t:'Don',p:60},{t:'Dhoom 3',p:50}]},
+  {cat:'Bollywood',q:'Name a Bollywood movie with a train scene everyone remembers',answers:[{t:'DDLJ',p:100},{t:'Chaiyya Chaiyya',p:80},{t:'Jab We Met',p:60},{t:'Chennai Express',p:50}]},
+  {cat:'Bollywood',q:'Name a Bollywood movie with a twist ending nobody saw coming',answers:[{t:'Kahaani',p:100},{t:'Talaash',p:80},{t:'Andhadhun',p:60},{t:'Drishyam',p:50},{t:'Baazigar',p:40}]},
+  {cat:'Hollywood',q:'Name a Marvel superhero everyone knows',answers:[{t:'Iron Man',p:100},{t:'Spider-Man',p:80},{t:'Captain America',p:60},{t:'Thor',p:50},{t:'Hulk',p:40}]},
+  {cat:'Hollywood',q:'Name something Batman is always seen with',answers:[{t:'Cape',p:100},{t:'Bat symbol',p:80},{t:'Batmobile',p:60},{t:'Mask',p:50},{t:'Alfred',p:40}]},
+  {cat:'Hollywood',q:'Name a Hollywood movie that made everyone cry',answers:[{t:'Titanic',p:100},{t:'The Lion King',p:80},{t:'Avengers Endgame',p:60},{t:'Toy Story 3',p:50},{t:'Marley and Me',p:40}]},
+  {cat:'Hollywood',q:'Name a famous Hollywood villain everyone is scared of',answers:[{t:'Thanos',p:100},{t:'Joker',p:80},{t:'Voldemort',p:60},{t:'Darth Vader',p:50},{t:'Hannibal Lecter',p:40}]},
+  {cat:'Hollywood',q:'Name a Hollywood actor known for action movies',answers:[{t:'Tom Cruise',p:100},{t:'Dwayne Johnson',p:80},{t:'Chris Evans',p:60},{t:'Keanu Reeves',p:50},{t:'Jason Statham',p:40}]},
+  {cat:'Hollywood',q:'Name a Disney movie everyone has watched',answers:[{t:'The Lion King',p:100},{t:'Frozen',p:80},{t:'Cinderella',p:60},{t:'Moana',p:50},{t:'Aladdin',p:40}]},
+  {cat:'Hollywood',q:'Name something always found in a Harry Potter movie',answers:[{t:'Wand',p:100},{t:'Hogwarts',p:80},{t:'Broomstick',p:60},{t:'Magic spells',p:50},{t:'Owl',p:40}]},
+  {cat:'Hollywood',q:'Name a Hollywood movie with a robot or AI in it',answers:[{t:'Transformers',p:100},{t:'Iron Man',p:80},{t:'Terminator',p:60},{t:'Wall-E',p:50},{t:'Ex Machina',p:40}]},
+  {cat:'Hollywood',q:'Name a word that appears most in Hollywood movie titles',answers:[{t:'The',p:100},{t:'Man',p:80},{t:'Dark',p:60},{t:'Night',p:50},{t:'Last',p:40}]},
+  {cat:'Hollywood',q:'Name a Hollywood movie set in space',answers:[{t:'Interstellar',p:100},{t:'Gravity',p:80},{t:'Guardians of the Galaxy',p:60},{t:'The Martian',p:50},{t:'Apollo 13',p:40}]},
+  {cat:'Hollywood',q:'Name a famous Hollywood comedy everyone has laughed at',answers:[{t:'Home Alone',p:100},{t:'The Mask',p:80},{t:'Ace Ventura',p:60},{t:'Mrs Doubtfire',p:50},{t:'Night at the Museum',p:40}]},
+  {cat:'Hollywood',q:'Name a Hollywood actress everyone knows',answers:[{t:'Scarlett Johansson',p:100},{t:'Jennifer Lawrence',p:80},{t:'Emma Watson',p:60},{t:'Angelina Jolie',p:50},{t:'Anne Hathaway',p:40}]},
+  {cat:'Hollywood',q:'Name a Hollywood movie based on a true story',answers:[{t:'Titanic',p:100},{t:'The Pursuit of Happyness',p:80},{t:'127 Hours',p:60},{t:'Schindler\'s List',p:50},{t:'Bohemian Rhapsody',p:40}]},
+  {cat:'Hollywood',q:'Name a thing that always happens in a Fast and Furious movie',answers:[{t:'Car race',p:100},{t:'Explosion',p:80},{t:'Vin Diesel driving',p:60},{t:'Someone betrays the team',p:50},{t:'Family speech',p:40}]},
+  {cat:'Hollywood',q:'Name a Hollywood movie with animals as the main characters',answers:[{t:'The Lion King',p:100},{t:'Madagascar',p:80},{t:'Finding Nemo',p:60},{t:'Zootopia',p:50},{t:'Ice Age',p:40}]},
+  {cat:'Hollywood',q:'Name something Spiderman can do that others can\'t',answers:[{t:'Shoot webs',p:100},{t:'Stick to walls',p:80},{t:'Swing between buildings',p:60},{t:'Spidey sense',p:50}]},
+  {cat:'Hollywood',q:'Name a Hollywood movie with a number in its title',answers:[{t:'Home Alone 2',p:100},{t:'Ocean\'s Eleven',p:80},{t:'300',p:60},{t:'2012',p:50},{t:'47 Meters Down',p:40}]},
+  {cat:'Hollywood',q:'Name a Hollywood movie where the hero saves the whole world',answers:[{t:'Avengers Endgame',p:100},{t:'Independence Day',p:80},{t:'Armageddon',p:60},{t:'Doctor Strange',p:50},{t:'Man of Steel',p:40}]},
+  {cat:'Hollywood',q:'Name a famous Hollywood dialogue everyone can recite',answers:[{t:'I\'ll be back - Terminator',p:100},{t:'Why so serious - Joker',p:80},{t:'To infinity and beyond - Toy Story',p:60},{t:'You shall not pass - LOTR',p:50},{t:'Just keep swimming - Nemo',p:40}]},
+  {cat:'Hollywood',q:'Name a Hollywood movie that has had the most sequels',answers:[{t:'Fast and Furious',p:100},{t:'Mission Impossible',p:80},{t:'Jurassic Park',p:60},{t:'Pirates of the Caribbean',p:50},{t:'Transformers',p:40}]},
+  {cat:'Singers',q:'Name a singer everyone has heard at least one song of',answers:[{t:'Arijit Singh',p:100},{t:'Shreya Ghoshal',p:80},{t:'Sonu Nigam',p:60},{t:'Ed Sheeran',p:50},{t:'Taylor Swift',p:40}]},
+  {cat:'Singers',q:'Name something a singer does on stage',answers:[{t:'Sings',p:100},{t:'Dances',p:80},{t:'Talks to crowd',p:60},{t:'Plays instrument',p:50},{t:'Changes outfits',p:40}]},
+  {cat:'Singers',q:'Name a female Indian singer everyone knows',answers:[{t:'Shreya Ghoshal',p:100},{t:'Neha Kakkar',p:80},{t:'Sunidhi Chauhan',p:60},{t:'Alka Yagnik',p:50}]},
+  {cat:'Singers',q:'Name a male international singer Gen Z loves',answers:[{t:'Ed Sheeran',p:100},{t:'Justin Bieber',p:80},{t:'The Weeknd',p:60},{t:'Bruno Mars',p:50},{t:'Harry Styles',p:40}]},
+  {cat:'Singers',q:'Name a famous international female singer',answers:[{t:'Taylor Swift',p:100},{t:'Beyonce',p:80},{t:'Rihanna',p:60},{t:'Adele',p:50},{t:'Lady Gaga',p:40}]},
+  {cat:'Singers',q:'Name a singing reality show on Indian TV',answers:[{t:'Indian Idol',p:100},{t:'Sa Re Ga Ma Pa',p:80},{t:'The Voice India',p:60},{t:'Rising Star',p:50},{t:'Superstar Singer',p:40}]},
+  {cat:'Singers',q:'Name something a singer needs to perform live',answers:[{t:'Microphone',p:100},{t:'Stage',p:80},{t:'Speakers',p:60},{t:'Band/music',p:50},{t:'Crowd',p:40}]},
+  {cat:'Singers',q:'Name a Bollywood singer known for sad songs',answers:[{t:'Arijit Singh',p:100},{t:'KK',p:80},{t:'Mohit Chauhan',p:60},{t:'Atif Aslam',p:50},{t:'Jubin Nautiyal',p:40}]},
+  {cat:'Singers',q:'Name a singer who is also a very famous actor',answers:[{t:'Will Smith',p:100},{t:'Jennifer Lopez',p:80},{t:'Lady Gaga',p:60},{t:'Justin Timberlake',p:50},{t:'Selena Gomez',p:40}]},
+  {cat:'Singers',q:'Name a song type or genre everyone has heard',answers:[{t:'Pop',p:100},{t:'Hip hop',p:80},{t:'Classical',p:60},{t:'Rock',p:50},{t:'Jazz',p:40}]},
+  {cat:'Singers',q:'Name a famous Indian singer from the old era',answers:[{t:'Lata Mangeshkar',p:100},{t:'Kishore Kumar',p:80},{t:'Mohammed Rafi',p:60},{t:'Mukesh',p:50},{t:'Asha Bhosle',p:40}]},
+  {cat:'Singers',q:'Name something fans do at a singer\'s live concert',answers:[{t:'Scream/sing along',p:100},{t:'Wave hands',p:80},{t:'Record on phone',p:60},{t:'Hold up signs',p:50},{t:'Throw flowers',p:40}]},
+  {cat:'Singers',q:'Name a Punjabi singer everyone in India knows',answers:[{t:'Diljit Dosanjh',p:100},{t:'AP Dhillon',p:80},{t:'Guru Randhawa',p:60},{t:'Hardy Sandhu',p:50},{t:'Gippy Grewal',p:40}]},
+  {cat:'Singers',q:'Name a singer famous for their unique voice',answers:[{t:'Adele',p:100},{t:'Freddie Mercury',p:80},{t:'Lata Mangeshkar',p:60},{t:'AR Rahman',p:50},{t:'Shreya Ghoshal',p:40}]},
+  {cat:'Singers',q:'Name something that makes a song go viral',answers:[{t:'Catchy hook/chorus',p:100},{t:'Trending reel/video',p:80},{t:'Famous movie scene',p:60},{t:'Celebrity shares it',p:50},{t:'Funny meme',p:40}]},
+  {cat:'Singers',q:'Name a singer who has won a Grammy',answers:[{t:'Beyonce',p:100},{t:'Taylor Swift',p:80},{t:'Adele',p:60},{t:'Bruno Mars',p:50},{t:'AR Rahman',p:40}]},
+  {cat:'Singers',q:'Name a music instrument a singer often plays on stage',answers:[{t:'Guitar',p:100},{t:'Piano',p:80},{t:'Drums',p:60},{t:'Violin',p:50},{t:'Flute',p:40}]},
+  {cat:'Singers',q:'Name a famous singer duo or group',answers:[{t:'Wham',p:100},{t:'Twenty One Pilots',p:80},{t:'Coldplay',p:60},{t:'BTS',p:50},{t:'One Direction',p:40}]},
+  {cat:'Singers',q:'Name a Bollywood singer known for peppy party songs',answers:[{t:'Honey Singh',p:100},{t:'Badshah',p:80},{t:'Diljit Dosanjh',p:60},{t:'Mika Singh',p:50}]},
+  {cat:'Singers',q:'Name a song everyone knows the first line of',answers:[{t:'Happy Birthday',p:100},{t:'Twinkle Twinkle',p:80},{t:'Jai Ho',p:60},{t:'We Will Rock You',p:50},{t:'Shape of You',p:40}]},
+  {cat:'Singers',q:'Name a singer known for wearing crazy outfits',answers:[{t:'Lady Gaga',p:100},{t:'Ranveer Singh',p:80},{t:'Harry Styles',p:60},{t:'Billie Eilish',p:50},{t:'Elton John',p:40}]},
+  {cat:'Singers',q:'Name a country famous for its music style',answers:[{t:'USA',p:100},{t:'Jamaica (Reggae)',p:80},{t:'India (Bollywood)',p:60},{t:'South Korea (Kpop)',p:50},{t:'Brazil (Samba)',p:40}]},
+  {cat:'Singers',q:'Name a singer who started their career very young',answers:[{t:'Justin Bieber',p:100},{t:'Neha Kakkar',p:80},{t:'Michael Jackson',p:60},{t:'Taylor Swift',p:50},{t:'Lorde',p:40}]},
+  {cat:'Singers',q:'Name something a singer does when they win an award',answers:[{t:'Give a speech',p:100},{t:'Cry/get emotional',p:80},{t:'Thank their fans',p:60},{t:'Hug their team',p:50},{t:'Perform a song',p:40}]},
+  {cat:'Singers',q:'Name a famous song that plays in every gym',answers:[{t:'Eye of the Tiger',p:100},{t:'Lose Yourself',p:80},{t:'Can\'t Stop the Feeling',p:60},{t:'Thunderstruck',p:50},{t:'Jump',p:40}]},
+  {cat:'Singers',q:'Name a singer everyone\'s parents also know',answers:[{t:'Kishore Kumar',p:100},{t:'Lata Mangeshkar',p:80},{t:'Michael Jackson',p:60},{t:'Elvis Presley',p:50},{t:'Mohammed Rafi',p:40}]},
+  {cat:'Singers',q:'Name a type of song that makes everyone emotional',answers:[{t:'Mother/family songs',p:100},{t:'Farewell songs',p:80},{t:'Patriotic songs',p:60},{t:'Childhood memory songs',p:50},{t:'Breakup songs',p:40}]},
+  {cat:'Singers',q:'Name a famous international music band',answers:[{t:'BTS',p:100},{t:'Coldplay',p:80},{t:'Maroon 5',p:60},{t:'One Direction',p:50},{t:'The Beatles',p:40}]},
+  {cat:'Singers',q:'Name a place where people listen to music the most',answers:[{t:'Earphones while walking',p:100},{t:'Car/bus',p:80},{t:'Gym',p:60},{t:'Room alone',p:50},{t:'Study time',p:40}]},
+];
+
+let editingQIdx=-1;
+let setupCatFilter='All';
+let qbankCatFilter='All';
+let game={t1:'',t2:'',s1:0,s2:0,qIdxs:[],curQ:0,revealed:[],activeBuzzer:-1,activeTurn:0,timerInterval:null,timerSec:0};
+
+function goTo(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id==='screen-setup'){setupCatFilter='All';renderCatFilter('cat-filter',setupCatFilter,filterSetupCat);renderSetupQList();}
+  if(id==='screen-questions'){qbankCatFilter='All';renderCatFilter('qbank-cat-filter',qbankCatFilter,filterQBankCat);renderQBank();}
+}
+
+function renderCatFilter(elId,active,cb){
+  const el=document.getElementById(elId);
+  const all=['All',...CATS];
+  el.innerHTML=all.map(c=>`<button class="cat-btn${active===c?' active':''}" onclick="(${cb.toString()})('${c}')">${c}</button>`).join('');
+}
+
+function filterSetupCat(cat){
+  setupCatFilter=cat;
+  renderCatFilter('cat-filter',setupCatFilter,filterSetupCat);
+  renderSetupQList();
+}
+
+function filterQBankCat(cat){
+  qbankCatFilter=cat;
+  renderCatFilter('qbank-cat-filter',qbankCatFilter,filterQBankCat);
+  renderQBank();
+}
+
+function renderSetupQList(){
+  const el=document.getElementById('setup-q-list');
+  const filtered=questions.map((q,i)=>({q,i})).filter(({q})=>setupCatFilter==='All'||q.cat===setupCatFilter);
+  el.innerHTML=filtered.map(({q,i})=>`
+    <div class="q-item" style="cursor:pointer;${game.qIdxs&&game.qIdxs.includes(i)?'border-color:var(--tv-gold);':''}" onclick="toggleSetupQ(${i})">
+      <div class="q-num">${i+1}</div>
+      <div class="q-text">${q.q}<span class="cat-tag">${q.cat}</span></div>
+      <div style="color:${game.qIdxs&&game.qIdxs.includes(i)?'var(--tv-gold)':'var(--tv-muted)'};font-size:18px;">${game.qIdxs&&game.qIdxs.includes(i)?'✓':''}</div>
+    </div>`).join('');
+  document.getElementById('sel-count').textContent=`${(game.qIdxs||[]).length}/3 questions selected`;
+  game.qIdxs=game.qIdxs||[];
+}
+
+function toggleSetupQ(i){
+  if(!game.qIdxs) game.qIdxs=[];
+  const idx=game.qIdxs.indexOf(i);
+  if(idx>-1){game.qIdxs.splice(idx,1);}
+  else if(game.qIdxs.length<3){game.qIdxs.push(i);}
+  renderSetupQList();
+}
+
+function startGame(){
+  const t1=document.getElementById('team1-name').value.trim()||'Team Alpha';
+  const t2=document.getElementById('team2-name').value.trim()||'Team Blaze';
+  if(!game.qIdxs||game.qIdxs.length===0){game.qIdxs=[0,1,2];}
+  game.t1=t1;game.t2=t2;game.s1=0;game.s2=0;game.curQ=0;game.activeBuzzer=-1;game.activeTurn=0;
+  document.getElementById('g-t1-name').textContent=t1;
+  document.getElementById('g-t2-name').textContent=t2;
+  document.getElementById('buzz-label-1').textContent=t1;
+  document.getElementById('buzz-label-2').textContent=t2;
+  loadQuestion();
+  goTo('screen-game');
+}
+
+function loadQuestion(){
+  const qIdx=game.qIdxs[game.curQ];
+  const q=questions[qIdx];
+  game.revealed=q.answers.map(()=>false);
+  game.activeBuzzer=-1;
+  document.getElementById('g-question-text').textContent=q.q;
+  document.getElementById('g-q-counter').textContent=`Question ${game.curQ+1} of ${game.qIdxs.length}`;
+  document.getElementById('buzz-indicator').className='buzz-indicator';
+  renderAnswerBoard(qIdx);
+  renderAwardGrid();
+  updateScoreDisplay();
+  startTimer(150);
+}
+
+function renderAnswerBoard(qIdx){
+  const q=questions[qIdx];
+  document.getElementById('answers-board').innerHTML=q.answers.map((a,i)=>`
+    <div class="ans-tile${game.revealed[i]?' revealed':''}" onclick="revealAnswer(${i})">
+      <div class="at-num">${i+1}</div>
+      <div class="at-text">${game.revealed[i]?a.t:'???'}</div>
+      <div class="at-pts">${game.revealed[i]?a.p+' pts':''}</div>
+    </div>`).join('');
+}
+
+function revealAnswer(i){
+  game.revealed[i]=true;
+  renderAnswerBoard(game.qIdxs[game.curQ]);
+}
+
+function renderAwardGrid(){
+  const q=questions[game.qIdxs[game.curQ]];
+  document.getElementById('award-grid').innerHTML=q.answers.map((a,i)=>`
+    <button class="award-btn" onclick="awardPoints(${i})">+${a.p}</button>`).join('');
+}
+
+function awardPoints(i){
+  const pts=questions[game.qIdxs[game.curQ]].answers[i].p;
+  const target=game.activeBuzzer!==-1?game.activeBuzzer:game.activeTurn;
+  if(target===0) game.s1+=pts; else game.s2+=pts;
+  revealAnswer(i);
+  updateScoreDisplay();
+}
+
+function buzzIn(team){
+  if(game.activeBuzzer!==-1) return;
+  game.activeBuzzer=team;
+  game.activeTurn=team;
+  const name=team===0?game.t1:game.t2;
+  const ind=document.getElementById('buzz-indicator');
+  ind.textContent=`⚡ ${name} buzzed in!`;
+  ind.className='buzz-indicator show '+(team===0?'team1':'team2');
+  clearInterval(game.timerInterval);
+  updateScoreDisplay();
+}
+
+function resetBuzz(){
+  game.activeBuzzer=-1;
+  document.getElementById('buzz-indicator').className='buzz-indicator';
+  document.getElementById('tsb1').classList.remove('buzzed');
+  document.getElementById('tsb2').classList.remove('buzzed');
+  updateScoreDisplay();
+  startTimer(150);
+}
+
+function switchTurn(){
+  game.activeTurn=game.activeTurn===0?1:0;
+  game.activeBuzzer=-1;
+  document.getElementById('buzz-indicator').className='buzz-indicator';
+  updateScoreDisplay();
+}
+
+function updateScoreDisplay(){
+  document.getElementById('g-t1-score').textContent=game.s1;
+  document.getElementById('g-t2-score').textContent=game.s2;
+  const t1=document.getElementById('tsb1');
+  const t2=document.getElementById('tsb2');
+  t1.className='team-score-block'+(game.activeTurn===0?' active-turn':'')+(game.activeBuzzer===0?' buzzed':'');
+  t2.className='team-score-block'+(game.activeTurn===1?' active-turn':'')+(game.activeBuzzer===1?' buzzed':'');
+  document.getElementById('turn-badge-1').textContent=game.activeTurn===0?'▶ Their Turn':'';
+  document.getElementById('turn-badge-2').textContent=game.activeTurn===1?'▶ Their Turn':'';
+}
+
+function startTimer(sec){
+  clearInterval(game.timerInterval);
+  game.timerSec=sec;
+  const bar=document.getElementById('timer-bar');
+  bar.style.width='100%';
+  bar.style.background='var(--tv-gold)';
+  game.timerInterval=setInterval(()=>{
+    game.timerSec--;
+    const pct=Math.max(0,(game.timerSec/sec)*100);
+    bar.style.width=pct+'%';
+    if(pct<30) bar.style.background='#E24B4A';
+    else if(pct<60) bar.style.background='#EF9F27';
+    if(game.timerSec<=0) clearInterval(game.timerInterval);
+  },1000);
+}
+
+function nextQuestion(){
+  game.curQ++;
+  if(game.curQ>=game.qIdxs.length){endRound();return;}
+  game.activeTurn=game.activeTurn===0?1:0;
+  loadQuestion();
+}
+
+function endRound(){
+  clearInterval(game.timerInterval);
+  const winner=game.s1>=game.s2?game.t1:game.t2;
+  const ws=Math.max(game.s1,game.s2);
+  document.getElementById('w-name').textContent=winner;
+  document.getElementById('w-score').textContent=ws+' pts';
+  document.getElementById('w-t1n').textContent=game.t1;
+  document.getElementById('w-t2n').textContent=game.t2;
+  document.getElementById('w-t1s').textContent=game.s1;
+  document.getElementById('w-t2s').textContent=game.s2;
+  goTo('screen-winner');
+}
+
+function renderQBank(){
+  const filtered=questions.map((q,i)=>({q,i})).filter(({q})=>qbankCatFilter==='All'||q.cat===qbankCatFilter);
+  document.getElementById('qbank-list').innerHTML=filtered.map(({q,i})=>`
+    <div class="q-item">
+      <div class="q-num">${i+1}</div>
+      <div class="q-text">${q.q}<span class="cat-tag">${q.cat}</span></div>
+      <button class="q-edit-btn" onclick="openQuestionEditor(${i})"><i class="ti ti-edit" aria-hidden="true"></i></button>
+      <button class="q-edit-btn" onclick="deleteQuestion(${i})" style="color:var(--tv-red);"><i class="ti ti-trash" aria-hidden="true"></i></button>
+    </div>`).join('');
+}
+
+function openQuestionEditor(idx){
+  editingQIdx=idx;
+  document.getElementById('modal-title').textContent=idx===-1?'Add Question':'Edit Question';
+  document.getElementById('modal-q-text').value=idx===-1?'':questions[idx].q;
+  const catSel=document.getElementById('modal-q-cat');
+  catSel.innerHTML=CATS.map(c=>`<option value="${c}"${idx!==-1&&questions[idx].cat===c?' selected':''}>${c}</option>`).join('');
+  const ans=idx===-1?[{t:'',p:100},{t:'',p:80},{t:'',p:60},{t:'',p:50},{t:'',p:40}]:questions[idx].answers;
+  document.getElementById('modal-answers-grid').innerHTML=ans.map((a,i)=>`
+    <div class="ans-row">
+      <div class="ans-pts">${PTS[i]||20} pts</div>
+      <input type="text" placeholder="Answer ${i+1}..." value="${a.t||''}" id="modal-ans-${i}" />
+    </div>`).join('');
+  document.getElementById('modal-overlay').style.display='flex';
+}
+
+function saveQuestion(){
+  const qText=document.getElementById('modal-q-text').value.trim();
+  const cat=document.getElementById('modal-q-cat').value;
+  if(!qText) return;
+  const answers=[];
+  for(let i=0;i<7;i++){
+    const el=document.getElementById('modal-ans-'+i);
+    if(el&&el.value.trim()) answers.push({t:el.value.trim(),p:PTS[i]||20});
+  }
+  if(!answers.length) return;
+  if(editingQIdx===-1) questions.push({cat,q:qText,answers});
+  else questions[editingQIdx]={cat,q:qText,answers};
+  closeModal();
+  renderQBank();
+}
+
+function deleteQuestion(idx){questions.splice(idx,1);renderQBank();}
+function closeModal(){document.getElementById('modal-overlay').style.display='none';}
+function closeModalOutside(e){if(e.target.id==='modal-overlay') closeModal();}
+
+document.addEventListener('keydown',function(e){
+  const s=document.querySelector('.screen.active');
+  if(!s||s.id!=='screen-game') return;
+  if(e.key.toLowerCase()==='a') buzzIn(0);
+  if(e.key.toLowerCase()==='l') buzzIn(1);
+});
+
+renderSetupQList();
+</script>
